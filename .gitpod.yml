@@ -3,4 +3,6 @@ image:
 
 tasks:
   - init: 'echo "TODO: Replace with init/build command"'
-    command: 'echo "TODO: Replace with command to start project"'
+  - command: > 
+      npm install -g @aws-amplify/cli &&
+      cd dynlab

@@ -1,0 +1,23 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-dynlab-dev-185956-authRole",
+            "UnauthRoleArn": "arn:aws:iam::543421991131:role/amplify-dynlab-dev-185956-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::543421991131:role/amplify-dynlab-dev-185956-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "amplify-dynlab-dev-185956-deployment",
+            "UnauthRoleName": "amplify-dynlab-dev-185956-unauthRole",
+            "StackName": "amplify-dynlab-dev-185956",
+            "StackId": "arn:aws:cloudformation:us-east-1:543421991131:stack/amplify-dynlab-dev-185956/a59898e0-fc3c-11ea-b40b-12909bffa46d",
+            "AmplifyAppId": "d38vn80d7est7n"
+        },
+        "categories": {
+            "hosting": {
+                "amplifyhosting": {
+                    "appId": "d38vn80d7est7n",
+                    "type": "cicd"
+                }
+            }
+        }
+    }
+}
