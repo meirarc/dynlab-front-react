@@ -3,10 +3,15 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import 'semantic-ui-css/semantic.css'
+import '@aws-amplify/ui/dist/style.css';
+
+import { withAuthenticator } from 'aws-amplify-react';
+const AppWithAuth = withAuthenticator(App, true);
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <AppWithAuth />
   </React.StrictMode>,
   document.getElementById('root')
 );
