@@ -1,0 +1,23 @@
+.list-item {
+  display: inline-block;
+}
+
+.delete-button {
+  float: right;
+}
+
+.btn {
+  margin-right: 5px;
+}
+
+.reminder-tasks {
+  display: flex;
+  justify-content: center;
+}
+
+li {
+  width: 100%;
+  margin: 5px 0px;
+  list-style-type: none;
+}
+

@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from 'react';
 
 // API imports
-import { createTodo, deleteTodo } from '../graphql/mutations';
-import { listTodos } from '../graphql/queries';
+import { createTodo, deleteTodo } from '../../graphql/mutations';
+import { listTodos } from '../../graphql/queries';
 
 // Components
 import List from '@material-ui/core/List';
@@ -14,10 +14,13 @@ import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 
+// css
+import './Todos.css'
+
 // Amplify imports
 import Amplify, { API, graphqlOperation } from 'aws-amplify';
 import { withAuthenticator } from 'aws-amplify-react';
-import aws_exports from '../aws-exports';
+import aws_exports from '../../aws-exports';
 Amplify.configure(aws_exports);
 
 
@@ -46,7 +49,8 @@ const Todos = () => {
         } catch (err) { console.log('error fetching todos') }
     }
 
-    async function addTodo() {
+    async function addTodo(e) {
+        e.preventDefault();
         try {
             if (!formState.name || !formState.description) return
             const todo = { ...formState }
@@ -70,46 +74,46 @@ const Todos = () => {
 
   return (
     <div style={styles.container}>
-      <h2>Dynlab To-Do's</h2>
+        <h2>Dynlab To-Do's</h2>
+        <form onSubmit={addTodo} style={styles.form}>
+            <input
+                onChange={event => setInput('name', event.target.value)}
+                style={styles.input}
+                value={formState.name} 
+                placeholder="Name"
+            />
+            
+            <input
+                onChange={event => setInput('description', event.target.value)}
+                style={styles.input}
+                value={formState.description}
+                placeholder="Description"
+            />
+
+            <button style={styles.button} type='submit'>Create To-do</button>
+      </form>
       
-      <input
-        onChange={event => setInput('name', event.target.value)}
-        style={styles.input}
-        value={formState.name} 
-        placeholder="Name"
-      />
 
-      <input
-        onChange={event => setInput('description', event.target.value)}
-        style={styles.input}
-        value={formState.description}
-        placeholder="Description"
-      />
-
-      <button style={styles.button} onClick={addTodo}>Create To-do</button>
       
 
-      <List>
+      
+
         {
             todos.map((todo, index) => (
-                <ListItem key={todo.id ? todo.id : index} dense button>
-                    <Checkbox tabIndex={-1} disableRipple />
-                    <ListItemText primary={todo.name} />
-                    <ListItemText secondary={todo.description} />
-                    <ListItemSecondaryAction>
-                        <IconButton
-                            aria-label="Delete"
-                            onClick={() => {
-                                deleteTodo(todo);
-                            }}
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    </ListItemSecondaryAction>
-                </ListItem>
+                <div className="reminder-tasks">
+                <li className="list-group-item reminder-items"  key={todo.id}>
+                    <div className="list-item">
+                        <div><b>{todo.name}</b></div>
+                        <div><em>{todo.description}</em></div>
+                    </div>
+                    <div className="list-item delete-button" onClick={() => this.deleteReminder(todo.id)}>
+                        &#x2715;
+                    </div>
+                </li>
+              </div>
             ))
         }
-      </List>
+      
 
     </div>
 
@@ -118,11 +122,9 @@ const Todos = () => {
 
 
 const styles = {
+  form: { width: 360, margin: '0 auto', display: 'flex', flex: 1, flexDirection: 'column', justifyContent: 'center'},
   container: { width: 400, margin: '0 auto', display: 'flex', flex: 1, flexDirection: 'column', justifyContent: 'center', padding: 20 },
-  todo: {  marginBottom: 15 },
   input: { border: 'none', backgroundColor: '#ddd', marginBottom: 10, padding: 8, fontSize: 18 },
-  todoName: { fontSize: 20, fontWeight: 'bold' },
-  todoDescription: { marginBottom: 0 },
   button: { backgroundColor: 'black', color: 'white', outline: 'none', fontSize: 18, padding: '12px 0px' }
 }
 
