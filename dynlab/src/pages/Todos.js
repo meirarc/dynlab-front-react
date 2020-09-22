@@ -2,14 +2,25 @@
 import React, { useEffect, useState } from 'react';
 
 // API imports
-import { createTodo } from '../graphql/mutations';
+import { createTodo, deleteTodo } from '../graphql/mutations';
 import { listTodos } from '../graphql/queries';
+
+// Components
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import Checkbox from '@material-ui/core/Checkbox';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 // Amplify imports
 import Amplify, { API, graphqlOperation } from 'aws-amplify';
 import { withAuthenticator } from 'aws-amplify-react';
 import aws_exports from '../aws-exports';
 Amplify.configure(aws_exports);
+
+
 
 
 // start coding ... 
@@ -47,6 +58,16 @@ const Todos = () => {
         }
     }
 
+    async function deleteTodo(todo){
+        try{
+            console.log(todo);
+            //await API.graphql(graphqlOperation(deleteTodo, {input: todo}))
+        } catch (err){
+            console.err(err);
+        }
+
+    }
+
   return (
     <div style={styles.container}>
       <h2>Dynlab To-Do's</h2>
@@ -67,16 +88,31 @@ const Todos = () => {
 
       <button style={styles.button} onClick={addTodo}>Create To-do</button>
       
-      {
-        todos.map((todo, index) => (
-          <div key={todo.id ? todo.id : index} style={styles.todo}>
-            <p style={styles.todoName}>{todo.name}</p>
-            <p style={styles.todoDescription}>{todo.description}</p>
-          </div>
-        ))
-      }
+
+      <List>
+        {
+            todos.map((todo, index) => (
+                <ListItem key={todo.id ? todo.id : index} dense button>
+                    <Checkbox tabIndex={-1} disableRipple />
+                    <ListItemText primary={todo.name} />
+                    <ListItemText secondary={todo.description} />
+                    <ListItemSecondaryAction>
+                        <IconButton
+                            aria-label="Delete"
+                            onClick={() => {
+                                deleteTodo(todo);
+                            }}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </ListItemSecondaryAction>
+                </ListItem>
+            ))
+        }
+      </List>
 
     </div>
+
   );
 }
 
