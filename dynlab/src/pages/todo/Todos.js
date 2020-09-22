@@ -43,18 +43,22 @@ const Todos = () => {
         try {
             if (!formState.name || !formState.description) return
             const todo = { ...formState }
-            setTodos([...todos, todo])
             setFormState(initialState)
             await API.graphql(graphqlOperation(createTodo, {input: todo}))
+            fetchTodos();
         } catch (err) {
-        console.log('error creating todo:', err)
+            console.err('error creating todo:', err)
         }
     }
 
     async function deleteItem(todo){
+        const todoDetails = {
+            id: todo.id,
+        };
+
         try{
-            console.log(todo);
-            await API.graphql(graphqlOperation(deleteTodo, {input: todo}))
+            await API.graphql(graphqlOperation(deleteTodo, {input: todoDetails}))
+            fetchTodos();
         } catch (err){
             console.err(err);
         }
@@ -80,7 +84,7 @@ const Todos = () => {
             />
 
             <button style={styles.button} type='submit'>Create To-do</button>
-      </form>
+        </form>
     
         {
             todos.map((todo, index) => (
@@ -97,13 +101,11 @@ const Todos = () => {
               </div>
             ))
         }
-      
 
     </div>
 
   );
 }
-
 
 const styles = {
   form: { width: 340, margin: '0 auto', display: 'flex', flex: 1, flexDirection: 'column', justifyContent: 'center'},
