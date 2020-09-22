@@ -5,25 +5,14 @@ import React, { useEffect, useState } from 'react';
 import { createTodo, deleteTodo } from '../../graphql/mutations';
 import { listTodos } from '../../graphql/queries';
 
-// Components
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
 
 // css
 import './Todos.css'
 
 // Amplify imports
 import Amplify, { API, graphqlOperation } from 'aws-amplify';
-import { withAuthenticator } from 'aws-amplify-react';
 import aws_exports from '../../aws-exports';
 Amplify.configure(aws_exports);
-
-
 
 
 // start coding ... 
@@ -62,10 +51,10 @@ const Todos = () => {
         }
     }
 
-    async function deleteTodo(todo){
+    async function deleteItem(todo){
         try{
             console.log(todo);
-            //await API.graphql(graphqlOperation(deleteTodo, {input: todo}))
+            await API.graphql(graphqlOperation(deleteTodo, {input: todo}))
         } catch (err){
             console.err(err);
         }
@@ -92,21 +81,16 @@ const Todos = () => {
 
             <button style={styles.button} type='submit'>Create To-do</button>
       </form>
-      
-
-      
-
-      
-
+    
         {
             todos.map((todo, index) => (
                 <div className="reminder-tasks">
-                <li className="list-group-item reminder-items"  key={todo.id}>
-                    <div className="list-item">
+                <li className="list-group-item reminder-items" key={todo.id}>
+                    <div className="list-item"> 
                         <div><b>{todo.name}</b></div>
                         <div><em>{todo.description}</em></div>
                     </div>
-                    <div className="list-item delete-button" onClick={() => this.deleteReminder(todo.id)}>
+                    <div className="list-item delete-button" onClick={() => deleteItem(todo)}>
                         &#x2715;
                     </div>
                 </li>
@@ -122,8 +106,8 @@ const Todos = () => {
 
 
 const styles = {
-  form: { width: 360, margin: '0 auto', display: 'flex', flex: 1, flexDirection: 'column', justifyContent: 'center'},
-  container: { width: 400, margin: '0 auto', display: 'flex', flex: 1, flexDirection: 'column', justifyContent: 'center', padding: 20 },
+  form: { width: 340, margin: '0 auto', display: 'flex', flex: 1, flexDirection: 'column', justifyContent: 'center'},
+  container: { width: 380, margin: '0 auto', display: 'flex', flex: 1, flexDirection: 'column', justifyContent: 'center', padding: 20 },
   input: { border: 'none', backgroundColor: '#ddd', marginBottom: 10, padding: 8, fontSize: 18 },
   button: { backgroundColor: 'black', color: 'white', outline: 'none', fontSize: 18, padding: '12px 0px' }
 }
