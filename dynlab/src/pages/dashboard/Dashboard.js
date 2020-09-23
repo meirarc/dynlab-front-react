@@ -2,9 +2,9 @@ import React from 'react'
 
 import './Dashboard.css'
 
-function Sidebar() {
+function Dashboard() {
   return (
-      null
+      <h1>Dashboard</h1>
   )
 }
 

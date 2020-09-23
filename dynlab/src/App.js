@@ -8,20 +8,12 @@ import Amplify from 'aws-amplify';
 import aws_exports from './aws-exports';
 Amplify.configure(aws_exports);
 
-const items = [
-  { name: 'dashboard', label: 'Dashboard' },
-  { name: 'todo', label: 'To-Do' },
-]
-
 function App() {
   return (
-    
-    <div>
-        <Sidebar items={items} />
+    <>
+        <Sidebar />
         <Routes />
-    </div>
-
-    
+    </>
   );
 }
 
