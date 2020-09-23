@@ -6,8 +6,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import AddIcon from '@material-ui/icons/Add';
+import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
+import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 
 // Material Core
 import Fab from '@material-ui/core/Fab';
@@ -26,6 +27,8 @@ import { SignOut } from 'aws-amplify-react';
 
 const sidelist = [
     {name: 'Dashboard', path: '/dashboard', icon: <DashboardIcon />}, 
+    {name: 'Crypto', path: 'crypto', icon: <MonetizationOnIcon />},
+    {name: 'Carteira', path: '/wallet', icon: <AccountBalanceWalletIcon />},
     {name: 'To-do', path: '/todo', icon: <FormatListBulletedIcon />},
     {name: 'Profile', path: '/profile', icon: <AccountCircleIcon />},
 ];
