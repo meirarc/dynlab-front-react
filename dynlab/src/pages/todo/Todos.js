@@ -5,7 +5,6 @@ import React, { useEffect, useState } from 'react';
 import { createTodo, deleteTodo } from '../../graphql/mutations';
 import { listTodos } from '../../graphql/queries';
 
-
 // css
 import './Todos.css'
 
@@ -22,9 +21,17 @@ const Todos = () => {
     const [formState, setFormState] = useState(initialState);
     const [todos, setTodos] = useState([]);
 
+    const [refresh, getAPIResults] = useState(true);
+    const [results, setResults] = useState(todos);
+    
     useEffect(() => {
-        fetchTodos();
-    }, [])
+        if (refresh) {
+            fetchTodos();
+            getAPIResults(false);
+        }
+        setResults(todos.filter( (todo)=> todo.name.toLowerCase().includes(formState.name)));
+        
+    }, [formState.name, refresh])
 
     function setInput(key, value) {
         setFormState({ ...formState, [key]: value })
@@ -35,20 +42,19 @@ const Todos = () => {
             const todoData = await API.graphql(graphqlOperation(listTodos))
             const todos = todoData.data.listTodos.items
             setTodos(todos)
-        } catch (err) { console.log('error fetching todos') }
+        } catch (err) { console.err('error fetching todos', err) }
     }
 
     async function addTodo(e) {
         e.preventDefault();
         try {
             if (!formState.name || !formState.description) return
+            
             const todo = { ...formState }
             setFormState(initialState)
             await API.graphql(graphqlOperation(createTodo, {input: todo}))
-            fetchTodos();
-        } catch (err) {
-            console.err('error creating todo:', err)
-        }
+            getAPIResults(true);
+        } catch (err) { console.err('error creating todo:', err) }
     }
 
     async function deleteItem(todo){
@@ -58,11 +64,9 @@ const Todos = () => {
 
         try{
             await API.graphql(graphqlOperation(deleteTodo, {input: todoDetails}))
-            fetchTodos();
-        } catch (err){
-            console.err(err);
-        }
-
+            setFormState(initialState)
+            getAPIResults(true);
+        } catch (err) { console.err('error creating todo:', err) }
     }
 
   return (
@@ -86,8 +90,8 @@ const Todos = () => {
             <button style={styles.button} type='submit'>Create To-do</button>
         </form>
     
-        {
-            todos.map((todo, index) => (
+        {   
+            results.map((todo, index) => (
                 <div className="reminder-tasks">
                 <li className="list-group-item reminder-items" key={todo.id}>
                     <div className="list-item"> 

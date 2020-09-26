@@ -32,3 +32,77 @@ export const listTodos = /* GraphQL */ `
     }
   }
 `;
+export const getCryptoBot = /* GraphQL */ `
+  query GetCryptoBot($id: ID!) {
+    getCryptoBot(id: $id) {
+      id
+      api_key
+      api_secret
+      asset
+      currency
+      marging
+      active
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const listCryptoBots = /* GraphQL */ `
+  query ListCryptoBots(
+    $filter: ModelCryptoBotFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listCryptoBots(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        api_key
+        api_secret
+        asset
+        currency
+        marging
+        active
+        createdAt
+        updatedAt
+        owner
+      }
+      nextToken
+    }
+  }
+`;
+export const getUser = /* GraphQL */ `
+  query GetUser($id: ID!) {
+    getUser(id: $id) {
+      id
+      username
+      firstName
+      lastName
+      bio
+      image
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listUsers = /* GraphQL */ `
+  query ListUsers(
+    $filter: ModelUserFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listUsers(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        username
+        firstName
+        lastName
+        bio
+        image
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;

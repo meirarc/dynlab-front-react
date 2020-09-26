@@ -6,3 +6,25 @@ type Todo
   name: String!
   description: String
 }
+
+type CryptoBot
+@model
+@auth (rules: [{allow: owner}])
+{
+    id: ID!
+    api_key: String
+    api_secret: String
+    asset: String
+    currency: String
+    marging: String
+    active: Boolean
+}
+
+type User @model {
+  id: ID!
+  username: String!
+  firstName: String
+  lastName: String
+  bio: String
+  image: String
+}
