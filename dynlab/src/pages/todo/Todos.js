@@ -30,7 +30,6 @@ const Todos = () => {
             getAPIResults(false);
         }
         setResults(todos.filter( (todo)=> todo.name.toLowerCase().includes(formState.name)));
-        
     }, [formState.name, refresh])
 
     function setInput(key, value) {
@@ -42,8 +41,10 @@ const Todos = () => {
             const todoData = await API.graphql(graphqlOperation(listTodos))
             const todos = todoData.data.listTodos.items
             setTodos(todos)
+            setResults(todos);
         } catch (err) { console.err('error fetching todos', err) }
     }
+
 
     async function addTodo(e) {
         e.preventDefault();
@@ -72,6 +73,7 @@ const Todos = () => {
   return (
     <div style={styles.container}>
         <h2>Dynlab To-Do's</h2>
+
         <form onSubmit={addTodo} style={styles.form}>
             <input
                 onChange={event => setInput('name', event.target.value)}
