@@ -5,119 +5,229 @@ import React, { useEffect, useState } from 'react';
 import { createTodo, deleteTodo } from '../../graphql/mutations';
 import { listTodos } from '../../graphql/queries';
 
-// css
-import './Todos.css'
-
 // Amplify imports
 import Amplify, { API, graphqlOperation } from 'aws-amplify';
 import aws_exports from '../../aws-exports';
 Amplify.configure(aws_exports);
 
+// refactory
+//Break The UI Into A Component Hierarchy
+// * TODO App
+//      * Form
+//      * Todo Table
+//          * CategoryRow
+//          * Todo Row 
 
-// start coding ... 
-const initialState = { name : '', description : ''};
+
+// alterar formatação bold para style
+class TodoCategoryRow extends React.Component {
+  render() {
+    const name = this.props.name;
+    return (
+      <div>
+          <b>{name}</b>
+     </div>
+    );
+  }
+}
+
+// trocar X por icone de lixeira
+// mudar style para ficar lado a lado
+class TodoItemRow extends React.Component {
+
+    deleteItem(todo){
+        const todoDetails = { id: todo.id };
+
+        try{
+            API.graphql(graphqlOperation(deleteTodo, {input: todoDetails}))
+        } catch (err) { console.err('error creating todo:', err) }
+    }
+
+    // acrescentar onclick
+    render() {
+        const todo = this.props.todo;
+        const description = todo.description;
+
+        return (
+            <div>
+                <em>{description}</em>
+                <div onClick={() => this.deleteItem(todo)}>&#x2715;</div>
+            </div> 
+        );
+    }
+}
+
+class TodoTable extends React.Component {
+  render() {
+    const todos = this.props.todos.sort((a, b) => a.name > b.name ? 1 : -1);
+    const name = this.props.inputName;
+    const description = this.props.inputDescription;
+
+    const rows = [];
+    let lastName = null;
+    
+    
+    todos.forEach((todo) => {
+        if (todo.name.indexOf(name)=== -1){
+            return;
+        }
+
+        if (todo.description.indexOf(description)=== -1){
+            return;
+        }
+        
+        if (todo.name !== lastName) {
+            rows.push(
+            <TodoCategoryRow
+                name={todo.name}
+                key={todo.name} />
+            );
+        }
+        rows.push(
+            <TodoItemRow
+            todo={todo}
+            key={todo.id} />
+        );
+        lastName = todo.name;
+    });
+
+    return (
+      <div>
+        {rows}
+      </div>
+    );
+  }
+}
+
+
+class TodoForm extends React.Component {
+
+    constructor(props){
+        super(props);
+
+        this.state = {
+            inputName: '',
+            inputDescription: ''
+        };
+
+        this.handlerInputNameChange = this.handlerInputNameChange.bind(this)
+        this.handlerInputDescriptionChange = this.handlerInputDescriptionChange.bind(this)
+    }
+
+    handlerInputNameChange(e){
+        this.props.onInputNameChange(e.target.value);
+    }
+
+    handlerInputDescriptionChange(e){
+        this.props.onInputDescriptionChange(e.target.value);
+    }
+
+
+    addTodo(e) {
+        e.preventDefault();
+        try {
+            const todo = {name: this.props.inputName, description: this.props.inputDescription}
+            if (!todo.name || !todo.description) return
+            API.graphql(graphqlOperation(createTodo, {input: todo}))
+        } catch (err) { console.err('error creating todo:', err) }
+    }
+
+    //add create function on onclick/submit
+    render() {
+        return (
+        <form onSubmit={e => this.addTodo(e)} >
+            <input 
+                type="text" 
+                placeholder="Name..." 
+                value={this.props.inputName}
+                onChange={this.handlerInputNameChange}
+            />
+            
+            <input 
+                type="text" 
+                placeholder="Description..." 
+                value={this.props.inputDescription}
+                onChange={this.handlerInputDescriptionChange}
+            />
+            
+            <button 
+                type='submit'>
+                    Create To-do
+            </button>
+
+        </form>
+        );
+    }
+}
+
+class TodoApplication extends React.Component {
+
+    constructor(props){
+        super(props);
+        this.state = {
+            inputName: '',
+            inputDescription: ''
+        };
+
+        this.handlerInputNameChange = this.handlerInputNameChange.bind(this);
+        this.handlerInputDescriptionChange = this.handlerInputDescriptionChange.bind(this);
+    }
+
+    handlerInputNameChange(inputName){
+        this.setState({
+            inputName: inputName
+        });
+    }
+
+    handlerInputDescriptionChange(inputDescription){
+        this.setState({
+            inputDescription: inputDescription
+        });
+    }
+
+    render() {
+        const todos = this.props.todos;
+
+        return (
+        <div>
+            <TodoForm 
+                inputName={this.state.inputName}
+                inputDescription={this.state.inputDescription}
+                onInputNameChange={this.handlerInputNameChange}
+                onInputDescriptionChange={this.handlerInputDescriptionChange}
+            />
+
+            <TodoTable 
+                todos={todos} 
+                inputName={this.state.inputName}
+                inputDescription={this.state.inputDescription}
+            />
+        </div>
+        );
+    }
+}
 
 const Todos = () => {
-    const [formState, setFormState] = useState(initialState);
     const [todos, setTodos] = useState([]);
 
-    const [refresh, getAPIResults] = useState(true);
-    const [results, setResults] = useState(todos);
-    
     useEffect(() => {
-        if (refresh) {
-            fetchTodos();
-            getAPIResults(false);
-        }
-        setResults(todos.filter( (todo)=> todo.name.toLowerCase().includes(formState.name)));
-    }, [formState.name, refresh])
-
-    function setInput(key, value) {
-        setFormState({ ...formState, [key]: value })
-    }
+        fetchTodos()
+    }, [todos])
 
     async function fetchTodos() {
         try {
             const todoData = await API.graphql(graphqlOperation(listTodos))
             const todos = todoData.data.listTodos.items
             setTodos(todos)
-            setResults(todos);
         } catch (err) { console.err('error fetching todos', err) }
     }
-
-
-    async function addTodo(e) {
-        e.preventDefault();
-        try {
-            if (!formState.name || !formState.description) return
-            
-            const todo = { ...formState }
-            setFormState(initialState)
-            await API.graphql(graphqlOperation(createTodo, {input: todo}))
-            getAPIResults(true);
-        } catch (err) { console.err('error creating todo:', err) }
-    }
-
-    async function deleteItem(todo){
-        const todoDetails = {
-            id: todo.id,
-        };
-
-        try{
-            await API.graphql(graphqlOperation(deleteTodo, {input: todoDetails}))
-            setFormState(initialState)
-            getAPIResults(true);
-        } catch (err) { console.err('error creating todo:', err) }
-    }
-
-  return (
-    <div style={styles.container}>
-        <h2>Dynlab To-Do's</h2>
-
-        <form onSubmit={addTodo} style={styles.form}>
-            <input
-                onChange={event => setInput('name', event.target.value)}
-                style={styles.input}
-                value={formState.name} 
-                placeholder="Name"
-            />
-            
-            <input
-                onChange={event => setInput('description', event.target.value)}
-                style={styles.input}
-                value={formState.description}
-                placeholder="Description"
-            />
-
-            <button style={styles.button} type='submit'>Create To-do</button>
-        </form>
     
-        {   
-            results.map((todo, index) => (
-                <div className="reminder-tasks">
-                <li className="list-group-item reminder-items" key={todo.id}>
-                    <div className="list-item"> 
-                        <div><b>{todo.name}</b></div>
-                        <div><em>{todo.description}</em></div>
-                    </div>
-                    <div className="list-item delete-button" onClick={() => deleteItem(todo)}>
-                        &#x2715;
-                    </div>
-                </li>
-              </div>
-            ))
-        }
-
-    </div>
-
-  );
-}
-
-const styles = {
-  form: { width: 340, margin: '0 auto', display: 'flex', flex: 1, flexDirection: 'column', justifyContent: 'center'},
-  container: { width: 380, margin: '0 auto', display: 'flex', flex: 1, flexDirection: 'column', justifyContent: 'center', padding: 20 },
-  input: { border: 'none', backgroundColor: '#ddd', marginBottom: 10, padding: 8, fontSize: 18 },
-  button: { backgroundColor: 'black', color: 'white', outline: 'none', fontSize: 18, padding: '12px 0px' }
+    return (
+        <div>
+            <h2>Dynlab To-Do's</h2>
+            <TodoApplication todos={todos} />
+        </div>
+    );
 }
 
 export default Todos;
