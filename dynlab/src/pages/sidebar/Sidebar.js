@@ -76,7 +76,7 @@ export default function Sidebar() {
     >
       <List>
         {sidelist.map((text, index) => (
-          <ListItemLink href={text.path}>
+          <ListItemLink href={text.path} key={index}>
                 <ListItemIcon>{text.icon}</ListItemIcon>
                 <ListItemText primary={text.name} />
             </ListItemLink>
