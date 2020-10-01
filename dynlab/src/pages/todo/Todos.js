@@ -155,7 +155,7 @@ class TodoForm extends React.Component<> {
             <TextField
                 label="Name"
                 id="inputName"
-                defaultValue={this.props.inputName}
+                defaultValue={this.state.inputName}
                 onChange={this.handlerInputNameChange}
                 variant="outlined"
                 size="small"
@@ -164,7 +164,7 @@ class TodoForm extends React.Component<> {
             <TextField
                 label="Description"
                 id="inputDescription"
-                defaultValue={this.props.inputDescription}
+                defaultValue={this.state.inputDescription}
                 onChange={this.handlerInputDescriptionChange}
                 variant="outlined"
                 size="small"
