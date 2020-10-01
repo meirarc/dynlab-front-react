@@ -5,10 +5,17 @@ import React, { useEffect, useState } from 'react';
 import { createTodo, deleteTodo } from '../../graphql/mutations';
 import { listTodos } from '../../graphql/queries';
 
+//material ui
+import TextField from '@material-ui/core/TextField';
+import IconButton from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
+import ClearIcon from '@material-ui/icons/Clear';
+
 // Amplify imports
 import Amplify, { API, graphqlOperation } from 'aws-amplify';
 import aws_exports from '../../aws-exports';
 Amplify.configure(aws_exports);
+
 
 // refactory
 //Break The UI Into A Component Hierarchy
@@ -50,14 +57,18 @@ class TodoItemRow extends React.Component {
 
         return (
             <div>
+
+                <IconButton onClick={() => this.deleteItem(todo)} color="primary" aria-label="delete todo">
+                    <ClearIcon />
+                </IconButton>
+
                 <em>{description}</em>
-                <div onClick={() => this.deleteItem(todo)}>&#x2715;</div>
             </div> 
         );
     }
 }
 
-class TodoTable extends React.Component {
+class TodoTable extends React.Component<> {
   render() {
     const todos = this.props.todos.sort((a, b) => a.name > b.name ? 1 : -1);
     const name = this.props.inputName;
@@ -77,6 +88,7 @@ class TodoTable extends React.Component {
         }
         
         if (todo.name !== lastName) {
+            
             rows.push(
             <TodoCategoryRow
                 name={todo.name}
@@ -100,7 +112,8 @@ class TodoTable extends React.Component {
 }
 
 
-class TodoForm extends React.Component {
+class TodoForm extends React.Component<> {
+
 
     constructor(props){
         super(props);
@@ -112,6 +125,7 @@ class TodoForm extends React.Component {
 
         this.handlerInputNameChange = this.handlerInputNameChange.bind(this)
         this.handlerInputDescriptionChange = this.handlerInputDescriptionChange.bind(this)
+        
     }
 
     handlerInputNameChange(e){
@@ -134,26 +148,31 @@ class TodoForm extends React.Component {
 
     //add create function on onclick/submit
     render() {
+       
         return (
         <form onSubmit={e => this.addTodo(e)} >
-            <input 
-                type="text" 
-                placeholder="Name..." 
-                value={this.props.inputName}
+
+            <TextField
+                label="Name"
+                id="inputName"
+                defaultValue={this.props.inputName}
                 onChange={this.handlerInputNameChange}
+                variant="outlined"
+                size="small"
             />
-            
-            <input 
-                type="text" 
-                placeholder="Description..." 
-                value={this.props.inputDescription}
+
+            <TextField
+                label="Description"
+                id="inputDescription"
+                defaultValue={this.props.inputDescription}
                 onChange={this.handlerInputDescriptionChange}
+                variant="outlined"
+                size="small"
             />
             
-            <button 
-                type='submit'>
-                    Create To-do
-            </button>
+            <IconButton type='submit' color="primary" aria-label="add todo">
+                <AddIcon />
+            </IconButton>
 
         </form>
         );
